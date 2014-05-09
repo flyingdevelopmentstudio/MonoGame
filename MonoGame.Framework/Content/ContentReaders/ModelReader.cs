@@ -166,7 +166,10 @@ namespace Microsoft.Xna.Framework.Content
                     else
                         part = new ModelMeshPart();
 
-					part.VertexOffset = reader.ReadInt32();
+                    part.VertexOffset = reader.ReadInt32();
+
+                    //
+                    part.VertexOffset = 0;
                     part.NumVertices = reader.ReadInt32();
                     part.StartIndex = reader.ReadInt32();
                     part.PrimitiveCount = reader.ReadInt32();

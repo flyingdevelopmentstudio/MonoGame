@@ -151,6 +151,29 @@ namespace Microsoft.Xna.Framework.Graphics
             this.MipMapLevelOfDetailBias = 0.0f;
         }
 
+        public bool Compare(SamplerState from)
+        {
+            return from == null ||
+                this.Filter != from.Filter ||
+                this.AddressU != from.AddressU ||
+                this.AddressV != from.AddressV ||
+                this.AddressW != from.AddressW ||
+                this.MaxAnisotropy != from.MaxAnisotropy ||
+                this.MaxMipLevel != from.MaxMipLevel ||
+                this.MipMapLevelOfDetailBias != from.MipMapLevelOfDetailBias;
+        }
+
+        public void Copy(SamplerState from)
+        {
+            this.Filter = from.Filter;
+            this.AddressU = from.AddressU;
+            this.AddressV = from.AddressV;
+            this.AddressW = from.AddressW;
+            this.MaxAnisotropy = from.MaxAnisotropy;
+            this.MaxMipLevel = from.MaxMipLevel;
+            this.MipMapLevelOfDetailBias = from.MipMapLevelOfDetailBias;
+        }
+
 #if DIRECTX
 
         internal SharpDX.Direct3D11.SamplerState GetState(GraphicsDevice device)

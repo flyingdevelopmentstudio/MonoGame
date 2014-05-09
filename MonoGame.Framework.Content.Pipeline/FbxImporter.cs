@@ -27,7 +27,9 @@ namespace Microsoft.Xna.Framework.Content.Pipeline
             var importer = new AssimpImporter();
             importer.AttachLogStream(new LogStream((msg, userData) => context.Logger.LogMessage(msg)));
             var scene = importer.ImportFile(filename,
+                                            PostProcessSteps.MakeLeftHanded |
                                             PostProcessSteps.FlipUVs | // So far appears necessary
+                                            PostProcessSteps.FlipWindingOrder |
                                             PostProcessSteps.JoinIdenticalVertices |
                                             PostProcessSteps.Triangulate |
                                             PostProcessSteps.SortByPrimitiveType |

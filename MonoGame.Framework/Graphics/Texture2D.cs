@@ -433,7 +433,49 @@ namespace Microsoft.Xna.Framework.Graphics
         {
 			this.SetData(0, null, data, 0, data.Length);
         }
-		
+
+        public void ReadPixels<T>(int x, int y, int w, int h, T[] data) where T : struct
+        {
+            int size = GraphicsExtensions.Size(this.Format);
+            if (size != System.Runtime.InteropServices.Marshal.SizeOf(typeof(T)))
+            { throw new NotSupportedException(); }
+
+            PixelType pixelType;
+            switch (format)
+            {
+                case SurfaceFormat.Bgra4444:
+                {
+                    pixelType = PixelType.UnsignedShort4444;
+                    break;
+                }
+                default:
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            int pack = 0;
+            GL.GetInteger(
+#if WINDOWS
+                GetPName.PackAlignment, out pack
+#elif ANDROID
+                PixelStoreParameter.PackAlignment, ref pack
+#else
+                PixelStoreParameter.PackAlignment, ref pack
+#endif
+                );
+            GraphicsExtensions.CheckGLError();
+
+            GL.PixelStore(PixelStoreParameter.PackAlignment, size);
+            GraphicsExtensions.CheckGLError();
+
+            GL.ReadPixels(x, y, w, h, this.glFormat, pixelType, data);
+            GraphicsExtensions.CheckGLError();
+
+            GL.PixelStore(PixelStoreParameter.PackAlignment, pack);
+            GraphicsExtensions.CheckGLError();
+        }
+
 		public void GetData<T>(int level, Rectangle? rect, T[] data, int startIndex, int elementCount) where T : struct
         {
             if (data == null || data.Length == 0)

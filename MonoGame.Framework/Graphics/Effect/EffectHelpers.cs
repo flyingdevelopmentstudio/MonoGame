@@ -19,15 +19,16 @@ namespace Microsoft.Xna.Framework.Graphics
     [Flags]
     internal enum EffectDirtyFlags
     {
-        WorldViewProj   = 1,
-        World           = 2,
-        EyePosition     = 4,
-        MaterialColor   = 8,
-        Fog             = 16,
-        FogEnable       = 32,
-        AlphaTest       = 64,
-        ShaderIndex     = 128,
-        All             = -1
+        WorldViewProj           = 1,
+        World                   = 2,
+        EyePosition             = 4,
+        MaterialColor           = 8,
+        Fog                     = 16,
+        FogEnable               = 32,
+        AlphaTest               = 64,
+        ShaderIndex             = 128,
+        WorldInverseTranspose   = 256,
+        All                     = -1
     }
 
 
@@ -82,7 +83,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 Matrix.Multiply(ref worldView, ref projection, out worldViewProj);
                 
                 worldViewProjParam.SetValue(worldViewProj);
-                
+
                 dirtyFlags &= ~EffectDirtyFlags.WorldViewProj;
             }
 
@@ -152,16 +153,23 @@ namespace Microsoft.Xna.Framework.Graphics
             // Set the world and world inverse transpose matrices.
             if ((dirtyFlags & EffectDirtyFlags.World) != 0)
             {
+                worldParam.SetValue(world);
+                worldInverseTransposeParam.SetValue(world);
+                dirtyFlags &= ~EffectDirtyFlags.World;
+            }
+
+            if ((dirtyFlags & EffectDirtyFlags.WorldInverseTranspose) != 0)
+            {
                 Matrix worldTranspose;
                 Matrix worldInverseTranspose;
-                
+
                 Matrix.Invert(ref world, out worldTranspose);
                 Matrix.Transpose(ref worldTranspose, out worldInverseTranspose);
-                
+
                 worldParam.SetValue(world);
                 worldInverseTransposeParam.SetValue(worldInverseTranspose);
-                
-                dirtyFlags &= ~EffectDirtyFlags.World;
+
+                dirtyFlags &= ~EffectDirtyFlags.WorldInverseTranspose;
             }
 
             // Set the eye position.

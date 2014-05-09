@@ -210,24 +210,31 @@ namespace Microsoft.Xna.Framework.Graphics
             // over and we need to reset.
             if (_stateKey > EffectParameter.NextStateKey)
                 _stateKey = 0;
-            
+
+            var previousOffset = 0;
             for (var p = 0; p < _parameters.Length; p++)
             {
                 var index = _parameters[p];
                 var param = parameters[index];
 
-                if (param.StateKey < _stateKey)
-                    continue;
-
                 var offset = _offsets[p];
+                if (previousOffset > offset)
+                {
+                    //throw new Exception(string.Format("Pameter {0} stomped", param.Name));
+                }
+                if (param.StateKey < _stateKey)
+                { continue; }
+
                 _dirty = true;
 
                 SetParameter(offset, param);
+
+                previousOffset = offset + (param.ParameterClass ==
+                    EffectParameterClass.Matrix ? param.ColumnCount : param.RowCount) * 4 * 4;
             }
 
             _stateKey = EffectParameter.NextStateKey;
         }
-
 #if DIRECTX
 
         internal void Apply(GraphicsDevice device, ShaderStage stage, int slot)
@@ -264,13 +271,17 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                 var location = GL.GetUniformLocation(program, _name);
                 GraphicsExtensions.CheckGLError();
-                if (location == -1)
-                    return;
-
                 _program = program;
                 _location = location;
+
+                if (location == -1)
+                { return; }
+
                 _dirty = true;
             }
+
+            if (_location == -1)
+            { return; }
 
             // If the shader program is the same, the effect may still be different and have different values in the buffer
             if (!Object.ReferenceEquals(this, _lastConstantBufferApplied))

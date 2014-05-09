@@ -52,6 +52,10 @@ namespace Microsoft.Xna.Framework.Graphics
         Matrix projection = Matrix.Identity;
 
         Matrix worldView;
+        Matrix worldViewProj = Matrix.Identity;
+        Matrix worldInverseTranspose = Matrix.Identity;
+
+        Vector3 cameraPosition = Vector3.Zero;
 
         Vector3 diffuseColor = Vector3.One;
         Vector3 emissiveColor = Vector3.Zero;
@@ -93,7 +97,7 @@ namespace Microsoft.Xna.Framework.Graphics
             set
             {
                 world = value;
-                dirtyFlags |= EffectDirtyFlags.World | EffectDirtyFlags.WorldViewProj | EffectDirtyFlags.Fog;
+                dirtyFlags |= EffectDirtyFlags.World | EffectDirtyFlags.WorldViewProj | EffectDirtyFlags.Fog | EffectDirtyFlags.WorldInverseTranspose;
             }
         }
 
@@ -112,7 +116,6 @@ namespace Microsoft.Xna.Framework.Graphics
             }
         }
 
-
         /// <summary>
         /// Gets or sets the projection matrix.
         /// </summary>
@@ -127,7 +130,6 @@ namespace Microsoft.Xna.Framework.Graphics
             }
         }
 
-        private Matrix worldViewProj = Matrix.Identity;
         public Matrix WorldViewProj
         {
             get { return worldViewProj; }
@@ -136,6 +138,28 @@ namespace Microsoft.Xna.Framework.Graphics
                 worldViewProj = value;
                 worldViewProjParam.SetValue(value);
                 dirtyFlags &= ~EffectDirtyFlags.WorldViewProj;
+            }
+        }
+
+        public Matrix WorldInversTranspose
+        {
+            get { return worldInverseTranspose; }
+            set
+            {
+                worldInverseTranspose = value;
+                worldInverseTransposeParam.SetValue(value);
+                dirtyFlags &= ~EffectDirtyFlags.WorldInverseTranspose;
+            }
+        }
+
+        public Vector3 CameraPosition
+        {
+            get { return cameraPosition; }
+            set
+            {
+                cameraPosition = value;
+                eyePositionParam.SetValue(value);
+                dirtyFlags &= ~EffectDirtyFlags.EyePosition;
             }
         }
 
@@ -412,6 +436,8 @@ namespace Microsoft.Xna.Framework.Graphics
             view = cloneSource.view;
             projection = cloneSource.projection;
             worldViewProj = cloneSource.worldViewProj;
+            worldInverseTranspose = cloneSource.worldInverseTranspose;
+            cameraPosition = cloneSource.cameraPosition;
 
             diffuseColor = cloneSource.diffuseColor;
             emissiveColor = cloneSource.emissiveColor;
