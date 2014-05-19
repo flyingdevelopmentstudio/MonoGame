@@ -151,7 +151,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 var sampler = _samplers[i];
                 var texture = device.Textures[i];
 
-                if (sampler != null && texture != null && sampler != texture.glLastSamplerState)
+                if (sampler != null && texture != null && sampler != texture.glLastSamplerState[i])
                 {
                     // TODO: Avoid doing this redundantly (see TextureCollection.SetTextures())
                     // However, I suspect that rendering from the same texture with different sampling modes
@@ -166,7 +166,7 @@ namespace Microsoft.Xna.Framework.Graphics
                     // GraphicsExtensions.CheckGLError();
 
                     sampler.Activate(texture.glTarget, texture.LevelCount > 1);
-                    texture.glLastSamplerState = sampler;
+                    texture.glLastSamplerState[i] = sampler;
                 }
             }
 #endif
