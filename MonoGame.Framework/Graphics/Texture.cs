@@ -70,7 +70,10 @@ namespace Microsoft.Xna.Framework.Graphics
         internal int glTexture = -1;
         internal TextureTarget glTarget;
         internal TextureUnit glTextureUnit = TextureUnit.Texture0;
-        internal SamplerState glLastSamplerState = null;
+        internal SamplerState[] glLastSamplerState = null;
+
+        public Texture(GraphicsDevice graphicsDevice)
+        { glLastSamplerState = new SamplerState[graphicsDevice.MaxTextureSlots]; }
 #endif
 
         public SurfaceFormat Format
@@ -144,7 +147,11 @@ namespace Microsoft.Xna.Framework.Graphics
                 GL.DeleteTextures(1, ref glTexture);
                 GraphicsExtensions.CheckGLError();
                 glTexture = -1;
-                this.glLastSamplerState = null;
+                if (this.glLastSamplerState != null)
+                {
+                    for (int i = 0; i < this.glLastSamplerState.Length; ++i)
+                    { this.glLastSamplerState[i] = null; }
+                }
             });
 #endif
         }
@@ -175,8 +182,11 @@ namespace Microsoft.Xna.Framework.Graphics
                     GraphicsExtensions.CheckGLError();
                     glTexture = -1;
                 });
-
-                glLastSamplerState = null;
+                if (this.glLastSamplerState != null)
+                {
+                    for (int i = 0; i < this.glLastSamplerState.Length; ++i)
+                    { this.glLastSamplerState[i] = null; }
+                }
 #endif
             }
             base.Dispose(disposing);

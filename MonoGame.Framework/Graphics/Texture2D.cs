@@ -145,6 +145,9 @@ namespace Microsoft.Xna.Framework.Graphics
         }
 		
 		protected Texture2D(GraphicsDevice graphicsDevice, int width, int height, bool mipmap, SurfaceFormat format, SurfaceType type)
+#if OPENGL
+            : base(graphicsDevice)
+#endif
 		{
             if (graphicsDevice == null)
                 throw new ArgumentNullException("Graphics Device Cannot Be Null");
