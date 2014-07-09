@@ -64,7 +64,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 
-    <!-- <EmbeddedNativeLibrary Include="..\ThirdParty\Dependencies\openal-soft\libs\armeabi-v7a\libopenal32.so">
+    <EmbeddedNativeLibrary Include="..\ThirdParty\Dependencies\openal-soft\libs\armeabi-v7a\libopenal32.so">
       <Platforms>Android,Ouya</Platforms>
       <Link>libs\armeabi-v7a\libopenal32.so</Link>
     </EmbeddedNativeLibrary>
@@ -75,7 +75,7 @@
     <EmbeddedNativeLibrary Include="..\ThirdParty\Dependencies\openal-soft\libs\x86\libopenal32.so">
       <Platforms>Android,Ouya</Platforms>
       <Link>libs\x86\libopenal32.so</Link>
-    </EmbeddedNativeLibrary> -->
+    </EmbeddedNativeLibrary>
 
     <!-- Microsoft.Xna.Framework -->
     <Compile Include="BoundingBox.cs" />
