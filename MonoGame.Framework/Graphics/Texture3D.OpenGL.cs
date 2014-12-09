@@ -23,6 +23,7 @@ namespace Microsoft.Xna.Framework.Graphics
             throw new NotSupportedException("OpenGL ES 2.0 doesn't support 3D textures.");
 #else
             this.glTarget = TextureTarget.Texture3D;
+            this.glLastSamplerStates = new SamplerState[GraphicsDevice.MaxTextureSlots];
 
             GL.GenTextures(1, out this.glTexture);
             GraphicsExtensions.CheckGLError();

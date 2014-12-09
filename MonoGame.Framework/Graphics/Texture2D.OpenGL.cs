@@ -58,6 +58,7 @@ namespace Microsoft.Xna.Framework.Graphics
         private void PlatformConstruct(int width, int height, bool mipmap, SurfaceFormat format, SurfaceType type, bool shared)
         {
             this.glTarget = TextureTarget.Texture2D;
+            this.glLastSamplerStates = new SamplerState[GraphicsDevice.MaxTextureSlots];
             
             Threading.BlockOnUIThread(() =>
             {

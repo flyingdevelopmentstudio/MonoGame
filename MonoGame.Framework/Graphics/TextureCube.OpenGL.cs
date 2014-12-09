@@ -25,6 +25,7 @@ namespace Microsoft.Xna.Framework.Graphics
         private void PlatformConstruct(GraphicsDevice graphicsDevice, int size, bool mipMap, SurfaceFormat format, bool renderTarget)
         {
             this.glTarget = TextureTarget.TextureCubeMap;
+            this.glLastSamplerStates = new SamplerState[GraphicsDevice.MaxTextureSlots];
 
             Threading.BlockOnUIThread(() =>
             {
