@@ -19,27 +19,44 @@ using GetProgramParameterName = OpenTK.Graphics.ES20.ProgramParameter;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+    internal class ShaderLocation
+    {
+        internal int location;
+        internal ConstantBuffer lastConstantBufferApplied;
+
+        public ShaderLocation(int location)
+        {
+            this.location = location;
+        }
+    };
 
     internal class ShaderProgram
     {
         public readonly int Program;
 
-        private readonly Dictionary<string, int> _uniformLocations = new Dictionary<string, int>();
+        private readonly Dictionary<string, ShaderLocation> _uniformLocations = new Dictionary<string, ShaderLocation>();
 
         public ShaderProgram(int program)
         {
             Program = program;
         }
 
-        public int GetUniformLocation(string name)
+        public ShaderLocation GetUniformLocation(string name)
         {
-            if (_uniformLocations.ContainsKey(name))
-                return _uniformLocations[name];
+            ShaderLocation shaderLocation = null;
+            if (_uniformLocations.TryGetValue(name, out shaderLocation))
+            { return shaderLocation; }
 
-            var location = GL.GetUniformLocation(Program, name);
+            int location = GL.GetUniformLocation(Program, name);
             GraphicsExtensions.CheckGLError();
-            _uniformLocations[name] = location;
-            return location;
+
+            if (location != -1)
+            {
+                shaderLocation = new ShaderLocation(location);
+            }
+
+            _uniformLocations[name] = shaderLocation;
+            return shaderLocation;
         }
     }
 

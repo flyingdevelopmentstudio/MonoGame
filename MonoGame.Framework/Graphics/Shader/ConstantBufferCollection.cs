@@ -29,8 +29,8 @@ namespace Microsoft.Xna.Framework.Graphics
             get { return _buffers[index]; }
             set
             {
-                if (_buffers[index] == value)
-                    return;
+                //if (_buffers[index] == value)
+                //    return;
 
                 if (value != null)
                 {
@@ -65,7 +65,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (_valid == 0)
                 return;
 
-            var valid = _valid;
+            //var valid = _valid;
 
             for (var i = 0; i < _buffers.Length; i++)
             {
@@ -80,8 +80,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 }
 
                 // Early out if this is the last one.
-                valid &= ~(1 << i);
-                if (valid == 0)
+                _valid &= ~(1 << i);
+                if (_valid == 0)
                     return;
             }
         }
