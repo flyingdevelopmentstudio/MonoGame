@@ -301,7 +301,7 @@ namespace Microsoft.Xna.Framework
             presentationParameters.BackBufferHeight = _preferredBackBufferHeight;
             presentationParameters.DepthStencilFormat = _preferredDepthStencilFormat;
 
-            presentationParameters.IsFullScreen = false;
+            presentationParameters.IsFullScreen = this.IsFullScreen;
 #if WINDOWS_PHONE
 
 #elif WINRT

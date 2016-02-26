@@ -269,7 +269,11 @@ namespace Microsoft.Xna.Framework
                 updateClientBounds = false;
                 window.ClientRectangle = new System.Drawing.Rectangle(targetBounds.X,
                                      targetBounds.Y, targetBounds.Width, targetBounds.Height);
-                
+                // Center the window
+                window.Location = new System.Drawing.Point(
+                    (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - targetBounds.Width) / 2,
+                    (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - targetBounds.Height) / 2);
+
                 // if the window-state is set from the outside (maximized button pressed) we have to update it here.
                 // if it was set from the inside (.IsFullScreen changed), we have to change the window.
                 // this code might not cover all corner cases
