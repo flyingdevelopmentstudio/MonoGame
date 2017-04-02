@@ -443,6 +443,12 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             if (ParameterClass != EffectParameterClass.Matrix || ParameterType != EffectParameterType.Single)
                 throw new InvalidCastException();
+            SetValueUntested(ref value);
+        }
+
+        public void SetValueUntested(ref Matrix value)
+        {
+            Debug.Assert((ParameterClass != EffectParameterClass.Matrix || ParameterType != EffectParameterType.Single) == false);
 
             // HLSL expects matrices to be transposed by default.
             // These unrolled loops do the transpose during assignment.
@@ -816,7 +822,17 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                 throw new InvalidCastException();
             }
+            SetValueUntested(value);
+        }
 
+        public void SetValueUntested(Texture value)
+        {
+            Debug.Assert(
+                (this.ParameterType != EffectParameterType.Texture &&
+                this.ParameterType != EffectParameterType.Texture1D &&
+                this.ParameterType != EffectParameterType.Texture2D &&
+                this.ParameterType != EffectParameterType.Texture3D &&
+                this.ParameterType != EffectParameterType.TextureCube) == false);
 			Data = value;
             StateKey = unchecked(NextStateKey++);
 		}
@@ -825,7 +841,12 @@ namespace Microsoft.Xna.Framework.Graphics
 		{
             if (ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single)
                 throw new InvalidCastException();
+            SetValueUntested(ref value);
+        }
 
+        public void SetValueUntested(ref Vector2 value)
+        {
+            Debug.Assert((ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single) == false);
             var fData = (float[])Data;
             fData[0] = value.X;
             fData[1] = value.Y;
@@ -843,7 +864,12 @@ namespace Microsoft.Xna.Framework.Graphics
 		{
             if (ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single)
                 throw new InvalidCastException();
+            SetValueUntested(ref value);
+        }
 
+        public void SetValueUntested(ref Vector3 value)
+        {
+            Debug.Assert((ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single) == false);
             var fData = (float[])Data;
             fData[0] = value.X;
             fData[1] = value.Y;
@@ -862,7 +888,12 @@ namespace Microsoft.Xna.Framework.Graphics
 		{
             if (ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single)
                 throw new InvalidCastException();
+            SetValueUntested(ref value);
+        }
 
+        public void SetValueUntested(ref Vector4 value)
+        {
+            Debug.Assert((ParameterClass != EffectParameterClass.Vector || ParameterType != EffectParameterType.Single) == false);
 			var fData = (float[])Data;
             fData[0] = value.X;
             fData[1] = value.Y;
