@@ -23,20 +23,50 @@ namespace Microsoft.Xna.Framework.Graphics
 {
 	public partial class Texture3D : Texture
 	{
+        private void GenerateGLTextureIfRequired()
+        {
+            if (this.glTexture < 0)
+            {
+                GL.GenTextures(1, out this.glTexture);
+                GraphicsExtensions.CheckGLError();
+
+                // For best compatibility and to keep the default wrap mode of XNA, only set ClampToEdge if either
+                // dimension is not a power of two.
+                var wrap = TextureWrapMode.Repeat;
+                if (((_width & (_width - 1)) != 0) || ((_height & (_height - 1)) != 0) || ((_depth & (_depth - 1)) != 0))
+                    wrap = TextureWrapMode.ClampToEdge;
+
+                GL.BindTexture(TextureTarget.Texture3D, this.glTexture);
+                GraphicsExtensions.CheckGLError();
+
+                GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter, (_levelCount > 1) ? (int)TextureMinFilter.LinearMipmapLinear : (int)TextureMinFilter.Linear);
+                GraphicsExtensions.CheckGLError();
+
+                GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                GraphicsExtensions.CheckGLError();
+
+                GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS, (int)wrap);
+                GraphicsExtensions.CheckGLError();
+
+                GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT, (int)wrap);
+                GraphicsExtensions.CheckGLError();
+
+                GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR, (int)wrap);
+                GraphicsExtensions.CheckGLError();
+            }
+        }
 
         private void PlatformConstruct(GraphicsDevice graphicsDevice, int width, int height, int depth, bool mipMap, SurfaceFormat format, bool renderTarget)
         {
             this.glTarget = TextureTarget.Texture3D;
-
             this.glLastSamplerStates = new SamplerState[GraphicsDevice.MaxTextureSlots];
 
-            GL.GenTextures(1, out this.glTexture);
-            GraphicsExtensions.CheckGLError();
+            Threading.BlockOnUIThread(() =>
+            {
+                GenerateGLTextureIfRequired();
 
-            GL.BindTexture(glTarget, glTexture);
-            GraphicsExtensions.CheckGLError();
+                format.GetGLFormat(out glInternalFormat, out glFormat, out glType);
 
-            format.GetGLFormat(out glInternalFormat, out glFormat, out glType);
 #if GLES
             GL.TexImage3D((All)glTarget, 0, (int)glInternalFormat, width, height, depth, 0, (All)glFormat, (All)glType, IntPtr.Zero);
 #else
@@ -46,27 +76,41 @@ namespace Microsoft.Xna.Framework.Graphics
 
             if (mipMap)
                 throw new NotImplementedException("Texture3D does not yet support mipmaps.");
+            });
         }
 
         private void PlatformSetData<T>(int level,
                                      int left, int top, int right, int bottom, int front, int back,
                                      T[] data, int startIndex, int elementCount, int width, int height, int depth)
         {
-            var elementSizeInByte = Marshal.SizeOf(typeof(T));
-            var dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            var dataPtr = (IntPtr)(dataHandle.AddrOfPinnedObject().ToInt64() + startIndex * elementSizeInByte);
+            Threading.BlockOnUIThread(() =>
+            {
 
-            GL.BindTexture(glTarget, glTexture);
-            GraphicsExtensions.CheckGLError();
+                var elementSizeInByte = Marshal.SizeOf(typeof(T));
+                var dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
 
+                try
+                {
+                    var dataPtr = (IntPtr)(dataHandle.AddrOfPinnedObject().ToInt64() + startIndex * elementSizeInByte);
+
+                    GL.BindTexture(glTarget, glTexture);
+                    GraphicsExtensions.CheckGLError();
+
+                    GL.PixelStore(PixelStoreParameter.UnpackAlignment, GraphicsExtensions.GetSize(this.Format));
+                    GraphicsExtensions.CheckGLError();
 #if GLES
             GL.TexSubImage3D((All)glTarget, level, left, top, front, width, height, depth, (All)glFormat, (All)glType, dataPtr);
 #else
-            GL.TexSubImage3D(glTarget, level, left, top, front, width, height, depth, glFormat, glType, dataPtr);
+                    GL.TexSubImage3D(glTarget, level, left, top, front, width, height, depth, glFormat, glType, dataPtr);
 #endif
-            GraphicsExtensions.CheckGLError();
-
-            dataHandle.Free();
+                    GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
+                    GraphicsExtensions.CheckGLError();
+                }
+                finally
+                {
+                    dataHandle.Free();
+                }
+            });
         }
 
         private void PlatformGetData<T>(int level, int left, int top, int right, int bottom, int front, int back, T[] data, int startIndex, int elementCount)

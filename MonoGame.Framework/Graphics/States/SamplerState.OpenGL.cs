@@ -140,10 +140,12 @@ namespace Microsoft.Xna.Framework.Graphics
         throw new NotSupportedException();
       }
 
-      // Set up texture addressing.
-      GL.TexParameter(target, TextureParameterName.TextureWrapS, (int)GetWrapMode(AddressU));
+          // Set up texture addressing.
+          GL.TexParameter(target, TextureParameterName.TextureWrapS, (int)GetWrapMode(AddressU));
             GraphicsExtensions.CheckGLError();
             GL.TexParameter(target, TextureParameterName.TextureWrapT, (int)GetWrapMode(AddressV));
+            GraphicsExtensions.CheckGLError();
+            GL.TexParameter(target, TextureParameterName.TextureWrapR, (int)GetWrapMode(AddressW));
             GraphicsExtensions.CheckGLError();
 #if !GLES
             // LOD bias is not supported by glTexParameter in OpenGL ES 2.0

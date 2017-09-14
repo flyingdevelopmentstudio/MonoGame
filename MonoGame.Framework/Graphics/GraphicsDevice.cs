@@ -213,7 +213,7 @@ namespace Microsoft.Xna.Framework.Graphics
             ScissorRectangle = _viewport.Bounds;
 
             // Set the default render target.
-            ApplyRenderTargets(null);
+            ApplyRenderTargets(null, false);
         }
 
         public RasterizerState RasterizerState
@@ -487,10 +487,8 @@ namespace Microsoft.Xna.Framework.Graphics
             ApplyRenderTargets(renderTargets);
         }
 
-        internal void ApplyRenderTargets(RenderTargetBinding[] renderTargets)
+        internal void ApplyRenderTargets(RenderTargetBinding[] renderTargets, bool clearTarget = true)
         {
-            var clearTarget = false;
-
             PlatformResolveRenderTargets();
 
             // Clear the current bindings.
@@ -503,7 +501,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 _currentRenderTargetCount = 0;
 
                 PlatformApplyDefaultRenderTarget();
-                clearTarget = PresentationParameters.RenderTargetUsage == RenderTargetUsage.DiscardContents;
+                if (clearTarget)
+                    clearTarget = PresentationParameters.RenderTargetUsage == RenderTargetUsage.DiscardContents;
 
                 renderTargetWidth = PresentationParameters.BackBufferWidth;
                 renderTargetHeight = PresentationParameters.BackBufferHeight;
@@ -517,7 +516,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 var renderTarget = PlatformApplyRenderTargets();
 
                 // We clear the render target if asked.
-                clearTarget = renderTarget.RenderTargetUsage == RenderTargetUsage.DiscardContents;
+                if (clearTarget)
+                    clearTarget = renderTarget.RenderTargetUsage == RenderTargetUsage.DiscardContents;
 
                 renderTargetWidth = renderTarget.Width;
                 renderTargetHeight = renderTarget.Height;
