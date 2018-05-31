@@ -658,7 +658,7 @@ namespace TwoMGFX
             return effect;
         }
 
-        static public EffectObject CompileEffect(ShaderInfo shaderInfo, out string errorsAndWarnings)
+        static public EffectObject CompileEffect(ShaderInfo shaderInfo, out string errorsAndWarnings, Dictionary<string, string> precisionDict)
         {
             errorsAndWarnings = string.Empty;
 
@@ -666,13 +666,13 @@ namespace TwoMGFX
             var effect = CreateEffect(techniqueCount);
 
             for (int i = 0; i < techniqueCount; ++i)
-            { CompileTechnique(effect, shaderInfo, i, shaderInfo.Techniques[i], ref errorsAndWarnings); }
+            { CompileTechnique(effect, shaderInfo, i, shaderInfo.Techniques[i], ref errorsAndWarnings, precisionDict); }
 
             LinkEffect(effect);
             return effect;
         }
 
-        static public void CompileTechnique(EffectObject effect, ShaderInfo shaderInfo, int techniqueIndex, TechniqueInfo tinfo, ref string errorsAndWarnings)
+        static public void CompileTechnique(EffectObject effect, ShaderInfo shaderInfo, int techniqueIndex, TechniqueInfo tinfo, ref string errorsAndWarnings, Dictionary<string, string> precisionDict)
         {
             var technique = new d3dx_technique();
             technique.name = tinfo.name;
@@ -698,13 +698,13 @@ namespace TwoMGFX
                 if (!string.IsNullOrEmpty(pinfo.psFunction))
                 {
                     pass.state_count += 1;
-                    tempstate[pass.state_count - 1] = effect.CreateShader(shaderInfo, pinfo.psFunction, pinfo.psModel, false, ref errorsAndWarnings);
+                    tempstate[pass.state_count - 1] = effect.CreateShader(shaderInfo, pinfo.psFunction, pinfo.psModel, false, ref errorsAndWarnings, precisionDict);
                 }
 
                 if (!string.IsNullOrEmpty(pinfo.vsFunction))
                 {
                     pass.state_count += 1;
-                    tempstate[pass.state_count - 1] = effect.CreateShader(shaderInfo, pinfo.vsFunction, pinfo.vsModel, true, ref errorsAndWarnings);
+                    tempstate[pass.state_count - 1] = effect.CreateShader(shaderInfo, pinfo.vsFunction, pinfo.vsModel, true, ref errorsAndWarnings, precisionDict);
                 }
 
                 pass.states = new d3dx_state[pass.state_count];
@@ -802,7 +802,7 @@ namespace TwoMGFX
             effect.Parameters = parameters.ToArray();
         }
 
-        private d3dx_state CreateShader(ShaderInfo shaderInfo, string shaderFunction, string shaderProfile, bool isVertexShader, ref string errorsAndWarnings)
+        private d3dx_state CreateShader(ShaderInfo shaderInfo, string shaderFunction, string shaderProfile, bool isVertexShader, ref string errorsAndWarnings, Dictionary<string, string> precisionDict)
         {
             // Compile the shader.
             byte[] bytecode;
@@ -834,7 +834,7 @@ namespace TwoMGFX
                 if (shaderInfo.Profile == ShaderProfile.DirectX_11)
                     shaderData = ShaderData.CreateHLSL(bytecode, isVertexShader, ConstantBuffers, Shaders.Count, shaderInfo.SamplerStates, shaderInfo.Debug);
                 else if (shaderInfo.Profile == ShaderProfile.OpenGL)
-                    shaderData = ShaderData.CreateGLSL(bytecode, isVertexShader, ConstantBuffers, Shaders.Count, shaderInfo.SamplerStates, shaderInfo.Debug);
+                    shaderData = ShaderData.CreateGLSL(bytecode, isVertexShader, ConstantBuffers, Shaders.Count, shaderInfo.SamplerStates, shaderInfo.Debug, precisionDict);
                 else if (shaderInfo.Profile == ShaderProfile.PlayStation4)
                     shaderData = ShaderData.CreatePSSL(bytecode, isVertexShader, ConstantBuffers, Shaders.Count, shaderInfo.SamplerStates, shaderInfo.Debug);
                 else
