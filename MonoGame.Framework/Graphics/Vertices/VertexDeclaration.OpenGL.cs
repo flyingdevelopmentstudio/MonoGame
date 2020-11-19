@@ -56,9 +56,7 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 
             var offsetI64 = offset.ToInt64();
-            if (cachedDeclaration == null || cachedDeclaration._hashCode != attrInfo._hashCode ||
-                cachedOffset != offsetI64 ||
-                cachedVertexBuffer != this.GraphicsDevice._vertexBuffer)
+            if (cachedDeclaration == null || cachedDeclaration._hashCode != attrInfo._hashCode || cachedOffset != offsetI64 || cachedVertexBuffer != this.GraphicsDevice._vertexBuffer)
             {
                 cachedOffset = offsetI64;
                 cachedDeclaration = attrInfo;
@@ -73,8 +71,8 @@ namespace Microsoft.Xna.Framework.Graphics
                         this.VertexStride,
                         (IntPtr)(offset.ToInt64() + element.Offset));
                     GraphicsExtensions.CheckGLError();
-                    GraphicsDevice.SetVertexAttributeArray(attrInfo.EnabledAttributes);
                 }
+                GraphicsDevice.SetVertexAttributeArray(attrInfo.EnabledAttributes);
             }
         }
 
