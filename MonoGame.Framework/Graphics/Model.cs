@@ -21,7 +21,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		//     Gets a collection of ModelMesh objects which compose the model. Each ModelMesh
 		//     in a model may be moved independently and may be composed of multiple materials
 		//     identified as ModelMeshPart objects.
-		public ModelMeshCollection Meshes { get; private set; }
+		public List<ModelMesh> Meshes { get; private set; }
 		//
 		// Summary:
 		//     Gets the root bone for this model.
@@ -42,7 +42,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			this.graphicsDevice = graphicsDevice;
 
 			Bones = new ModelBoneCollection(bones);
-			Meshes = new ModelMeshCollection(meshes);
+			Meshes = new List<ModelMesh>(meshes);
 		}
 
         public struct MeshPart
