@@ -52,24 +52,40 @@ namespace Microsoft.Xna.Framework.Graphics
                     GraphicsExtensions.CheckGLError();
 
                     // Generate mipmaps for rendertargets when they are being used as textures (instead of everytime they are rendered to)
-                    var renderTarget = tex as RenderTarget2D;
-                    if (renderTarget != null && renderTarget.maxLevelDirty > renderTarget.minLevelDirty)
+                    int minLevelDirty = 0;
+                    int maxLevelDirty = 0;
+                    if (tex is RenderTargetCube)
                     {
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, renderTarget.minLevelDirty);
+                        var renderTarget = tex as RenderTargetCube;
+                        minLevelDirty = renderTarget.minLevelDirty;
+                        maxLevelDirty = renderTarget.maxLevelDirty;
+                        renderTarget.minLevelDirty = 0;
+                        renderTarget.maxLevelDirty = 0;
+                    }
+                    else if (tex is RenderTarget2D)
+                    {
+                        var renderTarget = tex as RenderTarget2D;
+                        minLevelDirty = renderTarget.minLevelDirty;
+                        maxLevelDirty = renderTarget.maxLevelDirty;
+                        renderTarget.minLevelDirty = 0;
+                        renderTarget.maxLevelDirty = 0;
+                    }
+
+                    if (maxLevelDirty > minLevelDirty)
+                    {
+                        GL.TexParameter(glTarget, TextureParameterName.TextureBaseLevel, minLevelDirty);
                         GraphicsExtensions.CheckGLError();
 
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, renderTarget.maxLevelDirty);
+                        GL.TexParameter(glTarget, TextureParameterName.TextureMaxLevel, maxLevelDirty);
                         GraphicsExtensions.CheckGLError();
 
 #if GLES
-                        GL.GenerateMipmap(renderTarget.glTarget);
+                        GL.GenerateMipmap(glTarget);
                         GraphicsExtensions.CheckGLError();
 #else
                         GL.GenerateMipmap((GenerateMipmapTarget)glTarget);
                         GraphicsExtensions.CheckGLError();
 #endif
-                        renderTarget.minLevelDirty = 0;
-                        renderTarget.maxLevelDirty = 0;
                     }
                 }
 

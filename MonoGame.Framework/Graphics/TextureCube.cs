@@ -22,6 +22,22 @@ namespace Microsoft.Xna.Framework.Graphics
                 return size;
             }
         }
+
+        public int Width
+        {
+            get
+            {
+                return size;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return size;
+            }
+        }
 		
 		public TextureCube (GraphicsDevice graphicsDevice, int size, bool mipMap, SurfaceFormat format)
             : this(graphicsDevice, size, mipMap, format, false)

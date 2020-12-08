@@ -87,25 +87,16 @@ namespace Microsoft.Xna.Framework.Graphics
             get { return _resolveFilter; }
         }
 
-        public RenderTargetBinding(RenderTarget2D renderTarget)
-		{
-			if (renderTarget == null) 
-				throw new ArgumentNullException("renderTarget");
-
-			_renderTarget = renderTarget;
-            _arraySlice = (int)CubeMapFace.PositiveX;
+        static Color debugClearColor =
 #if DEBUG
-            _clearColor = new Color(68, 34, 136, 255);
+            new Color(68, 34, 136, 255)
 #else
-            _clearColor = new Color(0, 0, 0, 0);
+            Color.TransparentBlack
 #endif
-            _clearDepth = 1.0f;
-            _clearStencil = 0;
+            ;
 
-            _resolveFilter = TextureFilter.Point;
-
-            minLevel = 0;
-            maxLevel = renderTarget.LevelCount - 1;
+        public RenderTargetBinding(RenderTarget2D renderTarget) : this(renderTarget, debugClearColor)
+        {
         }
 
         public RenderTargetBinding(RenderTarget2D renderTarget, Color clearColor, float clearDepth = 1.0f, int clearStencil = 0, TextureFilter resolveFilter = TextureFilter.Point)
@@ -123,8 +114,11 @@ namespace Microsoft.Xna.Framework.Graphics
             minLevel = 0;
             maxLevel = renderTarget.LevelCount - 1;
         }
+        public RenderTargetBinding(RenderTargetCube renderTarget, CubeMapFace cubeMapFace) : this(renderTarget, cubeMapFace, debugClearColor)
+        {
+        }
 
-        public RenderTargetBinding(RenderTargetCube renderTarget, CubeMapFace cubeMapFace)
+        public RenderTargetBinding(RenderTargetCube renderTarget, CubeMapFace cubeMapFace, Color clearColor, float clearDepth = 1.0f, int clearStencil = 0, TextureFilter resolveFilter = TextureFilter.Point)
         {
             if (renderTarget == null)
                 throw new ArgumentNullException("renderTarget");
@@ -133,55 +127,13 @@ namespace Microsoft.Xna.Framework.Graphics
 
             _renderTarget = renderTarget;
             _arraySlice = (int)cubeMapFace;
-#if DEBUG
-            _clearColor = new Color(68, 34, 136, 255);
-#else
-            _clearColor = new Color(0, 0, 0, 0);
-#endif
-            _clearDepth = 1.0f;
-            _clearStencil = 0;
-            _resolveFilter = TextureFilter.Point;
+            _clearColor = clearColor;
+            _clearDepth = clearDepth;
+            _clearStencil = clearStencil;
+            _resolveFilter = resolveFilter;
 
             minLevel = 0;
             maxLevel = renderTarget.LevelCount - 1;
         }
-
-#if DIRECTX
-
-        public RenderTargetBinding(RenderTarget3D renderTarget)
-        {
-            if (renderTarget == null)
-                throw new ArgumentNullException("renderTarget");
-
-            _renderTarget = renderTarget;
-            _arraySlice = 0;
-        }
-
-        public RenderTargetBinding(RenderTarget3D renderTarget, int arraySlice)
-        {
-            if (renderTarget == null)
-                throw new ArgumentNullException("renderTarget");
-            if (arraySlice < 0 || arraySlice >= renderTarget.Depth)
-                throw new ArgumentOutOfRangeException("arraySlice");
-
-            _renderTarget = renderTarget;
-            _arraySlice = arraySlice;
-        }
-
-#endif
-
-        public static implicit operator RenderTargetBinding(RenderTarget2D renderTarget)
-        {
-            return new RenderTargetBinding(renderTarget);
-        }
-
-#if DIRECTX
-
-        public static implicit operator RenderTargetBinding(RenderTarget3D renderTarget)
-        {
-            return new RenderTargetBinding(renderTarget);
-        }
-
-#endif
 	}
 }
